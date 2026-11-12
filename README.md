@@ -2,7 +2,7 @@
 
 A 3D open-world sandbox game about a young aetherist defending their home city from monster tides, built with Godot 4. Playable in English and Simplified Chinese.
 
-一款用 Godot 4 制作的 3D 大世界沙盒游戏:在魔法取代科学的现代世界里,作为一名年轻的灵能师守护家园,抵御兽潮。支持简体中文与英文。
+一款用 Godot 4 制作的 3D 大世界沙盒游戏:在灵能取代科学的现代世界里,作为一名年轻的灵能师守护家园,抵御兽潮。支持简体中文与英文。
 
 **Status / 状态**: design phase. 设计阶段。
 
