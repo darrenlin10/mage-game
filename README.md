@@ -9,3 +9,5 @@ A 3D open-world sandbox game about a young aetherist defending their home city f
 - [设计文档 / Design document](docs/DESIGN.md) — 世界观、系统、技术方案(中文)
 - [第一篇《云溪》剧情大纲 / Arc 1 story outline](docs/STORY_ARC1.md) — 剧情、抉择与结算(中文)
 - [元素进阶与灵能技 / Elements and Aether Arts](docs/ELEMENTS.md) — 各元素的进阶路线、技能表、灵种(中文)
+- [人物设定 / Characters](docs/CHARACTERS.md) — 可结缘的人物:能力、性格、外观设计(中文)
+- [Implementation plan / 实现方案](docs/IMPLEMENTATION.md) — architecture and a spec for each milestone (English)
