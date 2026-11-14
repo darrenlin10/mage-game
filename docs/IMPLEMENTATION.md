@@ -1,6 +1,6 @@
 # Implementation Plan — Arc 1《云溪》
 
-> Status: **v0.1 draft**. This document says *how* the game is built and in what order.
+> Status: **v0.2 draft**. This document says *how* the game is built and in what order.
 > *What* is built is defined by [DESIGN.md](DESIGN.md), [STORY_ARC1.md](STORY_ARC1.md), [ELEMENTS.md](ELEMENTS.md) and [CHARACTERS.md](CHARACTERS.md). Where they disagree with this file, they win and this file gets fixed.
 > Game terms keep their Chinese names; the English glossary is in DESIGN.md §12.
 
@@ -37,7 +37,7 @@ What I do: all code, data, text in both languages, procedural geometry, shaders,
 | Gameplay data | Typed `Resource` classes saved as `.tres` |
 | Narrative data | JSON for events, dialogue and quests (bulk-authored, easy to diff and validate) |
 | Text | CSV translation tables, one column per language |
-| Saves | JSON in `user://saves/`, versioned with migrations |
+| Saves | JSON in `user://saves/`, versioned with migrations. Per slot: one **chapter checkpoint** (written at chapter start, the only point a player can return to) and one **progress file** (written continuously, resume-only). No manual saves |
 | Tests | A small in-repo headless test runner (no external add-on needed) |
 | CI | A workflow that runs the headless tests and data validators on every push |
 
@@ -84,7 +84,7 @@ docs/
 | `Bus` | Typed signals between systems; systems never reference each other directly |
 | `Worldline` | Every flag and variable that records a choice or its consequence; the only writer of that state |
 | `Calendar` | Chapter, in-chapter phase, time of day, weather |
-| `Saves` | Serialise and restore all registered systems; autosave points; migrations |
+| `Saves` | Serialise and restore all registered systems; chapter checkpoint and continuous progress file; migrations |
 | `Rng` | Seeded streams per purpose (talent roll, awakening, events) stored in the save, so outcomes are fixed once rolled |
 | `Loc` | Thin wrapper over translations: language switch at runtime, missing-key reporting |
 | `Settings` | Controls, display, audio, accessibility |
@@ -161,7 +161,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - Godot project with the layout in §4; version pinned.
 - Autoloads from §5.1 with real `Saves`, `Loc`, `Settings`, `Rng`; the rest as working stubs.
 - Main menu: new game, continue, settings, language. Chinese font bundled.
-- Save slots with version field and one migration test.
+- Save slots with version field and one migration test. Each slot holds a chapter checkpoint and a progress file; the menu offers "continue" and "restart chapter", never "load earlier".
 - Test runner, validators, CI workflow.
 
 **Accept**
@@ -265,7 +265,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - Each prologue choice leaves the documented worldline state.
 - Validators: no untranslated key, no undeclared flag.
 
-**Needs**: protagonist voice (open question 4); manual saves or not (9).
+**Needs**: protagonist voice (open question 4).
 
 ### M6 — Chapter 1: 启灵
 
@@ -383,12 +383,12 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 **Goal**: the night the city falls, and the reckoning.
 
 **Build**
-- Five-phase night director with rising danger, route closures and per-phase autosave.
+- Five-phase night director with rising danger and route closures. The finale is its own chapter, so its checkpoint is the start of the night.
 - Home-to-station structure; the three approaches to family.
 - Hotspots by district; rail repair defence; train departures gated on 护道人; the last-train defence.
 - "Hold, don't kill" encounters against 头领级.
 - 顾松年's fixed sacrifice; 渡者's request; the assassin and the relic; 无岸's appearance.
-- Player death and reload.
+- Player death restarts the night from its checkpoint.
 - Settlement: named survivors, evacuee count with its breakdown, carry-over record written to the save.
 - Epilogue on the train.
 
