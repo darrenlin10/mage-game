@@ -1,6 +1,6 @@
 # Implementation Plan — Arc 1《云溪》
 
-> Status: **v0.3 draft**. This document says *how* the game is built and in what order.
+> Status: **v0.4 draft**. This document says *how* the game is built and in what order.
 > *What* is built is defined by [DESIGN.md](DESIGN.md), [STORY_ARC1.md](STORY_ARC1.md), [ELEMENTS.md](ELEMENTS.md) and [CHARACTERS.md](CHARACTERS.md). Where they disagree with this file, they win and this file gets fixed.
 > Game terms keep their Chinese names; the English glossary is in DESIGN.md §12.
 
@@ -22,7 +22,8 @@
 |---|---|---|
 | Allow the Godot download host in the cloud environment | I cannot fetch the engine today; without it I write code blind | You approve when I request it at Milestone 0 |
 | Godot 4 installed on your computer | Judging visuals and game feel needs a real GPU and a person | You |
-| A decision on character and animation sources | I cannot hand-animate characters (DESIGN open question 19) | You, before Milestone 4 |
+| Animation and base-body asset packs in anime style, placed in the repo | Movement, dodge, hit and casting animations come from packs | You choose and download, before Milestone 4; I can shortlist candidates and check licences |
+| An API key for a 3D generation service, entered through the secure credential form | Faces, hair, outfits and beasts are generated per the briefs in CHARACTERS.md and the bestiary | You, before Milestone 4; I will compare services first |
 | Answers to the open questions in DESIGN §16 | Several block specific milestones; each milestone below names what it needs | You |
 
 What I do: all code, data, text in both languages, procedural geometry, shaders, effects, UI, tests. What I cannot do: judge motion and feel in real time, or produce production-quality character models and animation.
@@ -112,6 +113,15 @@ docs/
 | `ItemDef` | id, kind, effects, gift tags, soul slots |
 | `EventDef` (JSON) | id, class (fixed/conditional/random/encounter), conditions, situation text, options (each with requirements, results, worldline writes), cooldown and exclusivity |
 | `QuestDef` (JSON) | id, chapter, steps, completion conditions, results |
+
+### 5.3a Character and beast asset pipeline
+
+- **One humanoid skeleton** for every human character. All animation packs are retargeted onto it once.
+- **Modular characters**: shared base body; per-character head, hair, outfit and signature item meshes generated or adapted from the briefs, skinned to the shared skeleton.
+- **Shared animation set**: locomotion, dodge, hit reactions, downed and rescue, and about ten casting archetypes. Arts pick an archetype; effects tell them apart.
+- **Beasts**: meshes generated from the bestiary. Where no fitting animation exists, motion is procedural (gait from foot placement, lunges and charges from code-driven curves).
+- **Toon shading unifies the sources**: one character shader and one outline pass, so pack assets and generated assets read as one style.
+- **Presentation of death is restrained**: no blood, no lingering shots, no bodies left in view. Characters fall and the camera moves on; most deaths are reported afterwards. Effects and cameras are built to this rule.
 
 ### 5.4 Three systems specified up front
 
@@ -266,7 +276,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - A scripted test shows three baseline NPCs needed for one same-grade beast, and a well-built player soloing it.
 - A companion can be downed, rescued, or lost for good, and the save remembers.
 
-**Needs**: character and animation source (open question 19); companion strength target (14).
+**Needs**: the chosen asset packs in the repo and the generation service key (§2); companion strength target (open question 14).
 
 ### M5 — Narrative foundation and the prologue
 
@@ -287,7 +297,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - Each prologue choice leaves the documented worldline state.
 - Validators: no untranslated key, no undeclared flag.
 
-**Needs**: protagonist voice (open question 4).
+**Needs**: nothing further. The protagonist has a fixed temperament in narration and player-chosen attitude in dialogue.
 
 ### M6 — Chapter 1: 启灵
 
@@ -398,7 +408,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - A player who never leaves the city reaches the finale with no warning given.
 - Leaving on foot is playable and can fail; both variants apply the documented affinity changes.
 
-**Needs**: fixed deaths and immunities (open question 2); 噬魂 consequences (16).
+**Needs**: 噬魂 consequences (open question 16).
 
 ### M12 — Finale and epilogue: 大潮
 
@@ -419,7 +429,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - Outcomes span the intended range: a neglectful run and a thorough run differ visibly in survivors and count.
 - The carry-over record contains everything listed in STORY §13.4.
 
-**Needs**: how dark the presentation is (open question 3).
+**Needs**: nothing further. Deaths are presented with restraint (§5.3a); only 顾松年's death is fixed.
 
 ### M13 — Polish and balance
 
