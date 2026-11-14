@@ -1,6 +1,6 @@
 # Implementation Plan — Arc 1《云溪》
 
-> Status: **v0.2 draft**. This document says *how* the game is built and in what order.
+> Status: **v0.3 draft**. This document says *how* the game is built and in what order.
 > *What* is built is defined by [DESIGN.md](DESIGN.md), [STORY_ARC1.md](STORY_ARC1.md), [ELEMENTS.md](ELEMENTS.md) and [CHARACTERS.md](CHARACTERS.md). Where they disagree with this file, they win and this file gets fixed.
 > Game terms keep their Chinese names; the English glossary is in DESIGN.md §12.
 
@@ -34,6 +34,7 @@ What I do: all code, data, text in both languages, procedural geometry, shaders,
 | Engine | Godot 4, latest stable at Milestone 0; exact version pinned in `project.godot` and recorded here |
 | Language | GDScript, statically typed throughout |
 | Renderer | Forward+; Compatibility kept working as a low-spec fallback |
+| Look | Toon shading, anime style: outlines, banded lighting, flat colour ramps, strong silhouette-first effects |
 | Gameplay data | Typed `Resource` classes saved as `.tres` |
 | Narrative data | JSON for events, dialogue and quests (bulk-authored, easy to diff and validate) |
 | Text | CSV translation tables, one column per language |
@@ -149,6 +150,26 @@ These carry the most risk, so their contracts are fixed before any content depen
 - **Captures**: for each milestone I produce still frames and frame sequences of the new content for my own checks.
 - **Your playtest**: every milestone ends with a short checklist for you to run on your machine. A milestone is done when the tests pass *and* you accept the checklist.
 
+## 6a. Content budget (30-hour target)
+
+Arc 1 targets about 30 hours: roughly 15 of main story and 15 of exploration, cultivation, professions and character lines. Resources are capped per chapter, so chapter length is bounded by content, not by farming.
+
+| Chapter | Main story | Free play | Random events available | Notes |
+|---|---|---|---|---|
+| 序章 | 1.5 h | 0.5 h | 3 | No combat |
+| 一 启灵 | 1.5 h | 1 h | 4 | First training, first contracts |
+| 二 修行 | 3 h | 5 h | 14 | The largest chapter; two regions |
+| 三 暗流 | 2.5 h | 2.5 h | 8 | First siege |
+| 四 溯源 | 2.5 h | 2.5 h | 8 | Deep zones with a lead |
+| 五 高考 | 1.5 h | 0.5 h | 3 | Exam events |
+| 六 暑假 | 1 h | 3 h | 6 | Catalyst, omens, farewells |
+| 终章与尾声 | 1.5 h | — | — | Real time |
+| **Total** | **15 h** | **15 h** | **46** | |
+
+Other pools: about 12 fortuitous encounters, 23 spirit seeds (few obtainable in one run), 9 companion personal lines, 5 romance lines, 4 nest lords, 6 professions with three ranks each.
+
+Per-chapter resource caps (crystals, deposits, nests, market stock, allocations) live in `data/chapters/` so the progression curve is tuned in one place.
+
 ## 7. Milestones
 
 Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call it done), and **Needs** (decisions or inputs required first).
@@ -182,13 +203,14 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - One beast (灰牙犬) with a simple hunt-and-pounce behaviour; burning and grass ignition.
 - A training dummy and a mastery readout to feel the difficulty curve from mastery 0 to 5.
 - A placeholder caster model with casting archetype animations.
+- Toon shader for characters, terrain and props (banded lighting, outlines), and toon-style effect materials. This is the look being judged.
 
 **Accept**
 - You can link and cast all three arts, see mastery change the link, and kill a 灰牙犬.
 - Stills and sequences of each art, with and without the seed.
 - **Your verdict on two questions**: does it look good enough, and does linking feel good under pressure. A "no" on the first triggers the engine change; a "no" on the second triggers a redesign of §5.4 before anything else is built.
 
-**Needs**: an agreed art direction reference (DESIGN open question 20).
+**Needs**: nothing further. Art direction is decided: toon shading, anime style.
 
 ### M2 — World foundation
 
@@ -235,7 +257,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - Rank-gap rule; poise and stagger; weak-point hits.
 - Companion AI using the same art and chain rules; four squad commands; reaction-aware targeting.
 - Downed state, rescue window, permanent death, recovery in town; loot split by head count.
-- Player downed and death outside the finale.
+- Player downed outside the finale: in shallow zones, rescue by a passing hunting party with permanent cultivation loss, a gear item taken or a favour owed (which schedules a follow-up event); in deep zones, death and restart from the chapter checkpoint.
 - Spawning by region and 潮位 (static values for now).
 - Character and beast models and animation sets integrated.
 
@@ -244,7 +266,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - A scripted test shows three baseline NPCs needed for one same-grade beast, and a well-built player soloing it.
 - A companion can be downed, rescued, or lost for good, and the save remembers.
 
-**Needs**: character and animation source (open question 19); death penalty outside the finale (11); companion strength target (14).
+**Needs**: character and animation source (open question 19); companion strength target (14).
 
 ### M5 — Narrative foundation and the prologue
 
@@ -304,7 +326,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - A non-金 character can still obtain gear by commissioning it.
 - Economy simulation test: resources available per chapter on each route stay within the planned bands.
 
-**Needs**: resource caps and respawn policy (open question 8); report-versus-hide gap (17).
+**Needs**: report-versus-hide gap (open question 17). Resources are capped per chapter (§6a).
 
 ### M8 — Chapter 2: 修行
 
@@ -324,7 +346,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 - Chapter 2 playable to its end on both the report and hide lines.
 - A run that only attends school and a run that only goes outside both reach Chapter 3, with measurably different strength and knowledge.
 
-**Needs**: target length (open question 7); romance exclusivity rules (12).
+**Needs**: romance exclusivity rules (open question 12).
 
 ### M9 — Sieges and Chapter 3: 暗流
 
@@ -425,7 +447,7 @@ Each milestone lists: **Goal**, **Build**, **Accept** (what must be true to call
 | Content volume (events, dialogue, two languages) | Schedule | Everything is data; validators catch gaps; pools sized to the agreed game length |
 | Branch explosion in the finale | Untestable outcomes | Outcomes computed from state, not hand-authored; automated sweep in M12 |
 | I cannot judge feel | Tuning stalls | A playtest checklist every milestone; balance in data so you can adjust without me |
-| Unlimited in-chapter time breaks the economy | Trivial difficulty | Policy decided before M7; economy simulation test |
+| Unlimited in-chapter time breaks the economy | Trivial difficulty | Resources are capped per chapter; economy simulation test in M7 |
 
 ## 9. If the engine changes after M1
 
